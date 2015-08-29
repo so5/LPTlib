@@ -20,132 +20,144 @@ namespace LPT
 //! @brief メッセージ出力を行なうクラス
 class LPT_LOG
 {
-    std::ofstream logfile;
+  std::ofstream logfile;
 
 private:
-    //Singletonパターンを適用
-    LPT_LOG(){}
-    ~LPT_LOG(){}
-    LPT_LOG(const LPT_LOG& obj);
-    LPT_LOG& operator=(const LPT_LOG& obj);
+  //Singletonパターンを適用
+  LPT_LOG() {}
+  ~LPT_LOG() {}
+  LPT_LOG(const LPT_LOG& obj);
+  LPT_LOG& operator=(const LPT_LOG& obj);
 
 public:
-    static LPT_LOG* GetInstance()
-    {
-        static LPT_LOG instance;
-        return &instance;
-    }
+  static LPT_LOG* GetInstance()
+  {
+    static LPT_LOG instance;
+    return &instance;
+  }
 
-    void Init(const std::string& BaseFileName)
-    {
-        int myrank = MPI_Manager::GetInstance()->get_myrank_w();
-        std::ostringstream oss;
-        oss<<myrank;
-        std::string filename(BaseFileName);
-        filename += "_";
-        filename += oss.str();
-        filename += ".log";
-        logfile.open(filename.c_str());
-    }
+  void Init(const std::string& BaseFileName)
+  {
+    int                myrank = MPI_Manager::GetInstance()->get_myrank_w();
+    std::ostringstream oss;
+    oss << myrank;
+    std::string filename(BaseFileName);
+    filename += "_";
+    filename += oss.str();
+    filename += ".log";
+    logfile.open(filename.c_str());
+  }
 
-    void FLUSH(void)
-    {
-        logfile.flush();
-    }
+  void FLUSH(void)
+  {
+    logfile.flush();
+  }
 
-    void LOG(std::string message)
-    {
+  void LOG(std::string message)
+  {
 #if defined(LPT_LOG_ENABLE) || defined(LPT_VERBOSE)
-        logfile<<"LPT LOG  : "<<message<<"\n";
-        logfile.flush();
+    logfile << "LPT LOG  : " << message << "\n";
+    logfile.flush();
 #endif
-    }
+  }
 
-    template<typename T>
-    void LOG(std::string message, T value)
-    {
+  template < typename T >
+  void LOG(std::string message, T value)
+  {
 #if defined(LPT_LOG_ENABLE) || defined(LPT_VERBOSE)
-        logfile<<"LPT LOG  : "<<message<<value<<"\n";
-        logfile.flush();
+    logfile << "LPT LOG  : " << message << value << "\n";
+    logfile.flush();
 #endif
-    }
+  }
 
-    template<typename T>
-    void LOG(std::string message, T* value, int max)
-    {
+  template < typename T >
+  void LOG(std::string message, T* value, int max)
+  {
 #if defined(LPT_LOG_ENABLE) || defined(LPT_VERBOSE)
-        logfile<<"LPT LOG  : "<<message;
-        for(int i = 0; i < max-1; i++)
-        {
-            logfile<<value[i]<<",";
-        }
-        logfile<<value[max-1]<<"\n";
-        logfile.flush();
-#endif
-    }
-
-    void INFO(std::string message)
+    logfile << "LPT LOG  : " << message;
+    for (int i = 0; i < max - 1; i++)
     {
-        logfile<<"LPT INFO : "<<message<<"\n";
+      logfile << value[i] << ",";
+    }
+    logfile << value[max - 1] << "\n";
+    logfile.flush();
+#endif
+  }
+
+  void INFO(std::string message)
+  {
+    logfile << "LPT INFO : " << message << "\n";
 #if defined(LPT_DEBUG) || defined(DEBUG)
-        logfile.flush();
+    logfile.flush();
 #endif
-    }
+  }
 
-    template<typename T>
-    void INFO(std::string message, T value)
-    {
-        logfile<<"LPT INFO : "<<message<<value<<"\n";
+  template < typename T >
+  void INFO(std::string message, T value)
+  {
+    logfile << "LPT INFO : " << message << value << "\n";
 #if defined(LPT_DEBUG) || defined(DEBUG)
-        logfile.flush();
+    logfile.flush();
 #endif
-    }
+  }
 
-    template<typename T>
-    void INFO(std::string message, T* value, int max)
+  template < typename T >
+  void INFO(std::string message, T* value, int max)
+  {
+    logfile << "LPT INFO : " << message;
+    for (int i = 0; i < max - 1; i++)
     {
-        logfile<<"LPT INFO : "<<message;
-        for(int i = 0; i < max-1; i++)
-        {
-            logfile<<value[i]<<",";
-        }
-        logfile<<value[max-1]<<"\n";
+      logfile << value[i] << ",";
+    }
+    logfile << value[max - 1] << "\n";
 #if defined(LPT_DEBUG) || defined(DEBUG)
-        logfile.flush();
+    logfile.flush();
 #endif
-    }
+  }
 
-    void WARN(std::string message)
-    {
-        logfile<<"LPT WARN : "<<message<<"\n";
-        logfile.flush();
-    }
+  void WARN(std::string message)
+  {
+    logfile << "LPT WARN : " << message << "\n";
+    logfile.flush();
+  }
 
-    template<typename T>
-    void WARN(std::string message, T value)
-    {
-        logfile<<"LPT WARN : "<<message<<value<<"\n";
-        logfile.flush();
-    }
+  template < typename T >
+  void WARN(std::string message, T value)
+  {
+    logfile << "LPT WARN : " << message << value << "\n";
+    logfile.flush();
+  }
 
-    void ERROR(std::string message)
+  template < typename T >
+  void WARN(std::string message, T* value, int max)
+  {
+    logfile << "LPT WARN: " << message;
+    for (int i = 0; i < max - 1; i++)
     {
-        logfile<<"LPT ERROR: "<<message<<std::endl;
-        logfile.flush();
+      logfile << value[i] << ",";
     }
+    logfile << value[max - 1] << "\n";
+    logfile.flush();
+  }
 
-    template<typename T>
-    void ERROR(std::string message, T value)
-    {
-        logfile<<"LPT ERROR : "<<message<<value<<std::endl;
-        logfile.flush();
-    }
+  void ERROR(std::string message)
+  {
+    logfile << "LPT ERROR: " << message << std::endl;
+    logfile.flush();
+  }
 
-    void TRACE(const std::string& file, const int& line)
-    {
-        logfile<<"LPT TRACE : "<<file<<"("<<line<<")"<<std::endl;
-        logfile.flush();
-    }
+  template < typename T >
+  void ERROR(std::string message, T value)
+  {
+    logfile << "LPT ERROR : " << message << value << std::endl;
+    logfile.flush();
+  }
+
+  void TRACE(const std::string& file, const int& line)
+  {
+    logfile << "LPT TRACE : " << file << "(" << line << ")" << std::endl;
+    logfile.flush();
+  }
 };
 #define LPT_LOG_TRACE() LPT_LOG::GetInstance()->TRACE(__FILE__, __LINE__)
 } // namespace LPT

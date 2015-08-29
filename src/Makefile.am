@@ -31,9 +31,8 @@ libLPT_a_SOURCES = \
    PP/PP_Transport.C \
    PP/StartPointCuboid.C \
    PP/StartPointRectangle.C \
-   PP/Utility.C \
    PP/Interpolator.C \
-   PP/PP_Integrator.C \
+   PP/Integrator.C \
    PP/ParticleData.C \
    PP/ParticleContainerIterator.C \
    DS/Cache.h \
@@ -58,7 +57,7 @@ libLPT_a_SOURCES = \
    PP/StartPointRectangle.h \
    PP/Utility.h \
    PP/Interpolator.h \
-   PP/PP_Integrator.h \
+   PP/Integrator.h \
    PP/ParticleContainer.h \
    PP/ParticleContainerIterator.h \
    PP/ParticleData.h \

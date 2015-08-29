@@ -24,143 +24,192 @@ namespace PPlib
 {
 std::string StartPoint::PrintTimeAndID(const double& RefTime) const
 {
-    std::ostringstream oss;
-    oss<<"StartTime            = "<<this->StartTime*RefTime<<std::endl;
-    oss<<"ReleaseTime          = "<<this->ReleaseTime*RefTime<<std::endl;
-    oss<<"TimeSpan             = "<<this->TimeSpan*RefTime<<std::endl;
-    oss<<"LatestEmitTime       = "<<this->LatestEmitTime*RefTime<<std::endl;
-    oss<<"ID                   = "<<this->ID[0]<<","<<this->ID[1]<<std::endl;
-    oss<<"LatestEmitParticleID = "<<this->LatestEmitParticleID<<std::endl;
-    return oss.str();
+  std::ostringstream oss;
+  oss << "StartTime            = " << this->StartTime * RefTime << std::endl;
+  oss << "ReleaseTime          = " << this->ReleaseTime * RefTime << std::endl;
+  oss << "TimeSpan             = " << this->TimeSpan * RefTime << std::endl;
+  oss << "LatestEmitTime       = " << this->LatestEmitTime * RefTime << std::endl;
+  oss << "ID                   = " << this->ID[0] << "," << this->ID[1] << std::endl;
+  oss << "LatestEmitParticleID = " << this->LatestEmitParticleID << std::endl;
+  return oss.str();
 }
 
 void StartPoint::ReadTimeAndID(std::istream& stream, const double& RefTime)
 {
-    std::string work;
-    //StartTime
-    std::getline(stream, work, '=');
-    std::getline(stream, work);
-    this->StartTime = std::atof(work.c_str())/RefTime;
+  std::string work;
+  //StartTime
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->StartTime = std::atof(work.c_str()) / RefTime;
 
-    //ReleaseTime
-    std::getline(stream, work, '=');
-    std::getline(stream, work);
-    this->ReleaseTime = std::atof(work.c_str())/RefTime;
+  //ReleaseTime
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->ReleaseTime = std::atof(work.c_str()) / RefTime;
 
-    //TimeSpan
-    std::getline(stream, work, '=');
-    std::getline(stream, work);
-    this->TimeSpan = std::atof(work.c_str())/RefTime;
+  //TimeSpan
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->TimeSpan = std::atof(work.c_str()) / RefTime;
 
-    //LatestEmitTime
-    std::getline(stream, work, '=');
-    std::getline(stream, work);
-    this->LatestEmitTime = std::atof(work.c_str())/RefTime;
+  //LatestEmitTime
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->LatestEmitTime = std::atof(work.c_str()) / RefTime;
 
-    //ID
-    std::getline(stream, work, '=');
-    std::getline(stream, work, ',');
-    this->ID[0] = std::atoi(work.c_str());
-    std::getline(stream, work);
-    this->ID[1] = std::atoi(work.c_str());
+  //ID
+  std::getline(stream, work, '=');
+  std::getline(stream, work, ',');
+  this->ID[0] = std::atoi(work.c_str());
+  std::getline(stream, work);
+  this->ID[1] = std::atoi(work.c_str());
 
-    //LatestEmitParticleID
-    std::getline(stream, work, '=');
-    std::getline(stream, work);
-    this->LatestEmitParticleID = std::atoi(work.c_str());
+  //LatestEmitParticleID
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->LatestEmitParticleID = std::atoi(work.c_str());
 }
 
-void StartPoint::EmitNewParticle(std::list<ParticleData*>* ParticleList, const double& CurrentTime, const int& CurrentTimeStep)
+void StartPoint::EmitNewParticle(std::list< ParticleData* >* ParticleList, const double& CurrentTime, const int& CurrentTimeStep)
 {
-    bool DoEmit = false;
+  bool DoEmit = false;
 
-    if(StartTime <= CurrentTime)
+  if (StartTime <= CurrentTime)
+  {
+    if (LatestEmitTime >= 0 && LatestEmitTime + TimeSpan <= CurrentTime)
     {
-        if(LatestEmitTime >= 0)
-        {
-            if(LatestEmitTime+TimeSpan <= CurrentTime)
-            {
-                DoEmit = true;
-            }
-        }else{
-            DoEmit = true;
-        }
+      DoEmit = true;
+    }
+    if (LatestEmitTime < 0)
+    {
+      DoEmit = true;
+    }
+  }
+
+  std::list< PPlib::ParticleData* > tmpParticleList;
+  if (DoEmit)
+  {
+    try
+    {
+      for (int i = 0; i < GetSumStartPoints(); i++)
+      {
+        PPlib::ParticleData* tmp = new ParticleData;
+        tmpParticleList.push_back(tmp);
+      }
+    }
+    catch (std::bad_alloc)
+    {
+      for (std::list< PPlib::ParticleData* >::iterator it = tmpParticleList.begin(); it != tmpParticleList.end(); ++it)
+      {
+        delete *it;
+      }
+      std::cerr << "faild to allocate memory for ParticleData. particle emission is skiped for this time step" << std::endl;
+      return;
     }
 
-    std::list<PPlib::ParticleData*> tmpParticleList;
-    if(DoEmit)
+    std::vector< REAL_TYPE > Coords;
+    GetGridPointCoord(Coords);
+
+    std::vector< REAL_TYPE >::iterator itCoords = Coords.begin();
+    for (std::list< PPlib::ParticleData* >::iterator it = tmpParticleList.begin(); it != tmpParticleList.end(); ++it)
     {
-        try
-        {
-            for(int i = 0; i < GetSumStartPoints(); i++)
-            {
-                PPlib::ParticleData* tmp = new ParticleData;
-                tmpParticleList.push_back(tmp);
-            }
-        }
-        catch(std::bad_alloc)
-        {
-            for(std::list<PPlib::ParticleData*>::iterator it = tmpParticleList.begin(); it != tmpParticleList.end(); ++it)
-            {
-                delete *it;
-            }
-            std::cerr<<"faild to allocate memory for ParticleData. particle emittion is skiped for this time step"<<std::endl;
-            return;
-        }
-
-        std::vector<REAL_TYPE> Coords;
-        GetGridPointCoord(Coords);
-
-        std::vector<REAL_TYPE>::iterator itCoords = Coords.begin();
-        for(std::list<PPlib::ParticleData*>::iterator it = tmpParticleList.begin(); it != tmpParticleList.end(); ++it)
-        {
-            (*it)->StartPointID1 = ID[0];
-            (*it)->StartPointID2 = ID[1];
-            (*it)->ParticleID    = LatestEmitParticleID++;
-            (*it)->StartTime     = CurrentTime;
-            (*it)->LifeTime      = ParticleLifeTime;
-            //放出直後の時刻は不正値(-1.0)を入れておく
-            (*it)->CurrentTime   = -1.0;
-            //放出されたタイミングでは粒子移動の計算前なのでCurrentTimeStep -1の値とする
-            //PP_Transport内で計算されたタイミングで更新後の時刻、タイムステップが代入される
-            (*it)->CurrentTimeStep = CurrentTimeStep-1;
-            (*it)->x               = (*itCoords++);
-            (*it)->y               = (*itCoords++);
-            (*it)->z               = (*itCoords++);
-            (*it)->BlockID         = DSlib::DecompositionManager::GetInstance()->FindBlockIDByCoordLinear((*it)->x, (*it)->y, (*it)->z);
-        }
-        this->LatestEmitTime = CurrentTime;
-        ParticleList->splice(ParticleList->end(), tmpParticleList);
+      (*it)->StartPointID1 = ID[0];
+      (*it)->StartPointID2 = ID[1];
+      (*it)->ParticleID    = LatestEmitParticleID++;
+      (*it)->StartTime     = CurrentTime;
+      (*it)->LifeTime      = ParticleLifeTime;
+      //放出直後の時刻は不正値(-1.0)を入れておく
+      (*it)->CurrentTime = -1.0;
+      //放出されたタイミングでは粒子移動の計算前なのでCurrentTimeStep -1の値とする
+      //PP_Transport内で計算されたタイミングで更新後の時刻、タイムステップが代入される
+      (*it)->CurrentTimeStep = CurrentTimeStep - 1;
+      (*it)->x               = (*itCoords++);
+      (*it)->y               = (*itCoords++);
+      (*it)->z               = (*itCoords++);
+      (*it)->BlockID         = DSlib::DecompositionManager::GetInstance()->FindBlockIDByCoordLinear((*it)->x, (*it)->y, (*it)->z);
     }
+    this->LatestEmitTime = CurrentTime;
+    ParticleList->splice(ParticleList->end(), tmpParticleList);
+  }
 }
 
-void StartPoint::DividePoints(std::vector<REAL_TYPE>* Coords, const int& NumPoints, const REAL_TYPE Coord1[3], const REAL_TYPE Coord2[3])
+void StartPoint::DividePoints(std::vector< REAL_TYPE >* Coords, const int& NumPoints, const REAL_TYPE Coord1[3], const REAL_TYPE Coord2[3])
 {
-    if(NumPoints == 1)
-    {
-        Coords->push_back(Coord1[0]);
-        Coords->push_back(Coord1[1]);
-        Coords->push_back(Coord1[2]);
-    }else{
-        for(int i = 0; i < NumPoints; i++)
-        {
-            REAL_TYPE x = Coord1[0] == Coord2[0] ? Coord1[0] : Coord1[0]+(Coord2[0]-Coord1[0])/(NumPoints-1)*i;
-            Coords->push_back(x);
-            REAL_TYPE y = Coord1[1] == Coord2[1] ? Coord1[1] : Coord1[1]+(Coord2[1]-Coord1[1])/(NumPoints-1)*i;
-            Coords->push_back(y);
-            REAL_TYPE z = Coord1[2] == Coord2[2] ? Coord1[2] : Coord1[2]+(Coord2[2]-Coord1[2])/(NumPoints-1)*i;
-            Coords->push_back(z);
-        }
-    }
+  if (NumPoints == 1)
+  {
+    Coords->push_back(Coord1[0]);
+    Coords->push_back(Coord1[1]);
+    Coords->push_back(Coord1[2]);
+    return;
+  }
+  for (int i = 0; i < NumPoints; i++)
+  {
+    REAL_TYPE x = Coord1[0] == Coord2[0] ? Coord1[0] : Coord1[0] + (Coord2[0] - Coord1[0]) / (NumPoints - 1) * i;
+    Coords->push_back(x);
+    REAL_TYPE y = Coord1[1] == Coord2[1] ? Coord1[1] : Coord1[1] + (Coord2[1] - Coord1[1]) / (NumPoints - 1) * i;
+    Coords->push_back(y);
+    REAL_TYPE z = Coord1[2] == Coord2[2] ? Coord1[2] : Coord1[2] + (Coord2[2] - Coord1[2]) / (NumPoints - 1) * i;
+    Coords->push_back(z);
+  }
 }
 
 bool StartPoint::CheckReleaseTime(const double& CurrentTime)
 {
-    if(ReleaseTime <= 0)
+  if (ReleaseTime <= 0)
+  {
+    return false;
+  }
+  return (StartTime + ReleaseTime) > CurrentTime ? false : true;
+}
+
+void WriteStartPoints(const std::string& filename, std::vector< StartPoint* >& StartPoints, const REAL_TYPE& RefLength, const double& RefTime)
+{
+  std::ofstream startpoint(filename.c_str());
+  for (std::vector< StartPoint* >::iterator it = StartPoints.begin(); it != StartPoints.end(); ++it)
+  {
+    startpoint << (*it)->TextPrint(RefLength, RefTime);
+  }
+}
+
+void ReadStartPoints(const std::string& filename, std::vector< StartPoint* >* StartPoints, const REAL_TYPE& RefLength, const double& RefTime)
+{
+  std::ifstream ifs(filename.c_str());
+  std::string   startpoint;
+  while (ifs)
+  {
+    std::getline(ifs, startpoint);
+    if (startpoint == "Point")
     {
-        return false;
-    }else{
-        return (StartTime+ReleaseTime) > CurrentTime ? false : true;
+      Point* tmp = PointFactory(NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      StartPoints->push_back(tmp);
+    } else if (startpoint == "Line") {
+      Line* tmp = LineFactory(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      StartPoints->push_back(tmp);
+    } else if (startpoint == "Rectangle") {
+      Rectangle* tmp = RectangleFactory(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      StartPoints->push_back(tmp);
+    } else if (startpoint == "Cuboid") {
+      Cuboid* tmp = CuboidFactory(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      StartPoints->push_back(tmp);
+    } else if (startpoint == "Circle") {
+      Circle* tmp = CircleFactory(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      if (tmp->Initialize())
+      {
+        StartPoints->push_back(tmp);
+      }
+    } else if (startpoint == "MovingPoints") {
+      MovingPoints* tmp = MovingPointsFactory(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+      tmp->ReadText(ifs, RefLength, RefTime);
+      StartPoints->push_back(tmp);
+    } else {
+      LPT::LPT_LOG::GetInstance()->WARN("unknown startpoint type : ", startpoint);
     }
+    startpoint.erase();
+  }
 }
 } // namespace PPlib

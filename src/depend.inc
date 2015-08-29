@@ -53,16 +53,16 @@ PP/Circle.o: ./PP/Circle.h ./PP/StartPoint.h ./DS/DV3.h ./LPT/LPT_LogOutput.h
 PP/Circle.o: ./LPT/FileManager.h
 PP/PPlib.o: ./PP/PPlib.h /usr/local/PMlib/include/PerfMonitor.h
 PP/PPlib.o: /usr/local/PMlib/include/PerfWatch.h ./PP/Interpolator.h
-PP/PPlib.o: ./DS/DataBlock.h PP/PP_Integrator.h ./PP/ParticleData.h
+PP/PPlib.o: ./DS/DataBlock.h PP/Integrator.h ./PP/ParticleData.h
 PP/PPlib.o: ./DS/DecompositionManager.h ./DS/DV3.h ./LPT/LPT_LogOutput.h
 PP/PPlib.o: ./LPT/FileManager.h ./DS/DSlib.h ./DS/Cache.h
 PP/PPlib.o: ./DS/CommDataBlock.h ./DS/Communicator.h ./PP/StartPoint.h
 PP/PPlib.o: PP/MovingPoints.h ./PP/Line.h ./PP/Rectangle.h ./PP/Cuboid.h
 PP/PPlib.o: ./PP/Circle.h LPT/LPT_ParticleOutput.h LPT/FileOutput.h
-PP/PP_Integrator.o: ./PP/Interpolator.h ./DS/DataBlock.h PP/PP_Integrator.h
+PP/Integrator.o: ./PP/Interpolator.h ./DS/DataBlock.h PP/Integrator.h
 PP/PP_Transport.o: ./PP/PPlib.h /usr/local/PMlib/include/PerfMonitor.h
 PP/PP_Transport.o: /usr/local/PMlib/include/PerfWatch.h ./PP/Interpolator.h
-PP/PP_Transport.o: ./DS/DataBlock.h PP/PP_Integrator.h ./PP/ParticleData.h
+PP/PP_Transport.o: ./DS/DataBlock.h PP/Integrator.h ./PP/ParticleData.h
 PP/PP_Transport.o: ./DS/DecompositionManager.h ./DS/DV3.h
 PP/PP_Transport.o: ./LPT/LPT_LogOutput.h ./LPT/FileManager.h ./DS/DSlib.h
 PP/PP_Transport.o: ./DS/Cache.h ./DS/CommDataBlock.h ./DS/Communicator.h

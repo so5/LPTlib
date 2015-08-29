@@ -34,7 +34,7 @@ LIB_SRCS_CPP = \
                PP/Cuboid.C \
                PP/Circle.C \
                PP/PPlib.C \
-               PP/PP_Integrator.C \
+               PP/Integrator.C \
                PP/PP_Transport.C \
                PP/Interpolator.C \
 

@@ -150,7 +150,7 @@ am_libLPT_a_OBJECTS = DS/libLPT_a-Communicator.$(OBJEXT) \
 	PP/libLPT_a-StartPointRectangle.$(OBJEXT) \
 	PP/libLPT_a-Utility.$(OBJEXT) \
 	PP/libLPT_a-Interpolator.$(OBJEXT) \
-	PP/libLPT_a-PP_Integrator.$(OBJEXT) \
+	PP/libLPT_a-Integrator.$(OBJEXT) \
 	PP/libLPT_a-ParticleData.$(OBJEXT) \
 	PP/libLPT_a-ParticleContainerIterator.$(OBJEXT)
 libLPT_a_OBJECTS = $(am_libLPT_a_OBJECTS)
@@ -368,7 +368,7 @@ libLPT_a_SOURCES = \
    PP/StartPointRectangle.C \
    PP/Utility.C \
    PP/Interpolator.C \
-   PP/PP_Integrator.C \
+   PP/Integrator.C \
    PP/ParticleData.C \
    PP/ParticleContainerIterator.C \
    DS/Cache.h \
@@ -393,7 +393,7 @@ libLPT_a_SOURCES = \
    PP/StartPointRectangle.h \
    PP/Utility.h \
    PP/Interpolator.h \
-   PP/PP_Integrator.h \
+   PP/Integrator.h \
    PP/ParticleContainer.h \
    PP/ParticleContainerIterator.h \
    PP/ParticleData.h \
@@ -519,7 +519,7 @@ PP/libLPT_a-Utility.$(OBJEXT): PP/$(am__dirstamp) \
 	PP/$(DEPDIR)/$(am__dirstamp)
 PP/libLPT_a-Interpolator.$(OBJEXT): PP/$(am__dirstamp) \
 	PP/$(DEPDIR)/$(am__dirstamp)
-PP/libLPT_a-PP_Integrator.$(OBJEXT): PP/$(am__dirstamp) \
+PP/libLPT_a-Integrator.$(OBJEXT): PP/$(am__dirstamp) \
 	PP/$(DEPDIR)/$(am__dirstamp)
 PP/libLPT_a-ParticleData.$(OBJEXT): PP/$(am__dirstamp) \
 	PP/$(DEPDIR)/$(am__dirstamp)
@@ -546,7 +546,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@DS/$(DEPDIR)/libLPT_a-DecompositionManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@LPT/$(DEPDIR)/libLPT_a-LPT.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-Interpolator.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-PP_Integrator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-Integrator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-PP_Transport.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-PPlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@PP/$(DEPDIR)/libLPT_a-ParticleContainerIterator.Po@am__quote@
@@ -793,19 +793,19 @@ PP/libLPT_a-Interpolator.obj: PP/Interpolator.C
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -c -o PP/libLPT_a-Interpolator.obj `if test -f 'PP/Interpolator.C'; then $(CYGPATH_W) 'PP/Interpolator.C'; else $(CYGPATH_W) '$(srcdir)/PP/Interpolator.C'; fi`
 
-PP/libLPT_a-PP_Integrator.o: PP/PP_Integrator.C
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -MT PP/libLPT_a-PP_Integrator.o -MD -MP -MF PP/$(DEPDIR)/libLPT_a-PP_Integrator.Tpo -c -o PP/libLPT_a-PP_Integrator.o `test -f 'PP/PP_Integrator.C' || echo '$(srcdir)/'`PP/PP_Integrator.C
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) PP/$(DEPDIR)/libLPT_a-PP_Integrator.Tpo PP/$(DEPDIR)/libLPT_a-PP_Integrator.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PP/PP_Integrator.C' object='PP/libLPT_a-PP_Integrator.o' libtool=no @AMDEPBACKSLASH@
+PP/libLPT_a-Integrator.o: PP/Integrator.C
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -MT PP/libLPT_a-Integrator.o -MD -MP -MF PP/$(DEPDIR)/libLPT_a-Integrator.Tpo -c -o PP/libLPT_a-Integrator.o `test -f 'PP/Integrator.C' || echo '$(srcdir)/'`PP/Integrator.C
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) PP/$(DEPDIR)/libLPT_a-Integrator.Tpo PP/$(DEPDIR)/libLPT_a-Integrator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PP/Integrator.C' object='PP/libLPT_a-Integrator.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -c -o PP/libLPT_a-PP_Integrator.o `test -f 'PP/PP_Integrator.C' || echo '$(srcdir)/'`PP/PP_Integrator.C
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -c -o PP/libLPT_a-Integrator.o `test -f 'PP/Integrator.C' || echo '$(srcdir)/'`PP/Integrator.C
 
-PP/libLPT_a-PP_Integrator.obj: PP/PP_Integrator.C
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -MT PP/libLPT_a-PP_Integrator.obj -MD -MP -MF PP/$(DEPDIR)/libLPT_a-PP_Integrator.Tpo -c -o PP/libLPT_a-PP_Integrator.obj `if test -f 'PP/PP_Integrator.C'; then $(CYGPATH_W) 'PP/PP_Integrator.C'; else $(CYGPATH_W) '$(srcdir)/PP/PP_Integrator.C'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) PP/$(DEPDIR)/libLPT_a-PP_Integrator.Tpo PP/$(DEPDIR)/libLPT_a-PP_Integrator.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PP/PP_Integrator.C' object='PP/libLPT_a-PP_Integrator.obj' libtool=no @AMDEPBACKSLASH@
+PP/libLPT_a-Integrator.obj: PP/Integrator.C
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -MT PP/libLPT_a-Integrator.obj -MD -MP -MF PP/$(DEPDIR)/libLPT_a-Integrator.Tpo -c -o PP/libLPT_a-Integrator.obj `if test -f 'PP/Integrator.C'; then $(CYGPATH_W) 'PP/Integrator.C'; else $(CYGPATH_W) '$(srcdir)/PP/Integrator.C'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) PP/$(DEPDIR)/libLPT_a-Integrator.Tpo PP/$(DEPDIR)/libLPT_a-Integrator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PP/Integrator.C' object='PP/libLPT_a-Integrator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -c -o PP/libLPT_a-PP_Integrator.obj `if test -f 'PP/PP_Integrator.C'; then $(CYGPATH_W) 'PP/PP_Integrator.C'; else $(CYGPATH_W) '$(srcdir)/PP/PP_Integrator.C'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -c -o PP/libLPT_a-Integrator.obj `if test -f 'PP/Integrator.C'; then $(CYGPATH_W) 'PP/Integrator.C'; else $(CYGPATH_W) '$(srcdir)/PP/Integrator.C'; fi`
 
 PP/libLPT_a-ParticleData.o: PP/ParticleData.C
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libLPT_a_CXXFLAGS) $(CXXFLAGS) -MT PP/libLPT_a-ParticleData.o -MD -MP -MF PP/$(DEPDIR)/libLPT_a-ParticleData.Tpo -c -o PP/libLPT_a-ParticleData.o `test -f 'PP/ParticleData.C' || echo '$(srcdir)/'`PP/ParticleData.C
