@@ -205,12 +205,7 @@ void Communicator::CommPacking(const long& BlockID, REAL_TYPE* Data, int* Mask, 
 #endif
       for (int j = 0; j < Header->BlockSize[0]; j++)
       {
-        // work aroundとして袖領域は0埋めしておく
-        if (j < halo || k < halo || l < halo || j > Header->BlockSize[0] - halo - 1 || k > Header->BlockSize[1] - halo - 1 || l > Header->BlockSize[2] - halo - 1) {
-          d_cut_buff[indexS++] = 0;
-        } else {
           d_cut_buff[indexS++] = d_cut[BlockLocalOffset + DecompositionManager::Convert3Dto1D(j, k, l, SubDomainSize[0], SubDomainSize[1])];
-        }
       }
     }
   }

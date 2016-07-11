@@ -73,7 +73,7 @@ inline int quantize9(REAL_TYPE a)
 
   if (s < 0 || QT_9 < s)
   {
-    printf("quantize error : out of range %f > %d\n", a, s);
+    printf("quantize error in Interpolator : out of range %f > %d\n", a, s);
     exit(0);
   }
 
@@ -207,7 +207,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
     long long v2[3] = { std::get< 0 >(coords[2]), std::get< 1 >(coords[2]), std::get< 2 >(coords[2]) };
 
     Utility::xmy< 3 >(v0, v1);
-    Utility::xmy< 3 >(v1, v2);
+    Utility::xmy< 3 >(v0, v2);
     Utility::cross_product(v1, v2, normal_vector);
     //交点が4点以上の時は4点目以降が同一平面にあるかチェック
     if (coords.size() >= 4)
@@ -242,6 +242,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
     }
 
     // 流速の補間に使うセルを決める
+    // pは1つ目の交点座標から粒子座標へのベクトル
     long long p[3];
     p[0] = quantize9(ip) - v0[0];
     p[1] = quantize9(jp) - v0[1];
@@ -261,12 +262,16 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
     // 補間に用いるセルを決める
     for (int i = 0; i < 8; i++)
     {
+      // cellは1つ目の交点座標から各セル中心へのベクトル
       long long cell[3];
       cell[0]       = (xdirs[i] + 1) % 2 * 511 - v0[0];
       cell[1]       = (ydirs[i] + 1) % 2 * 511 - v0[1];
       cell[2]       = (zdirs[i] + 1) % 2 * 511 - v0[2];
       long long tmp = Utility::dot< 3 >(cell, normal_vector);
+
       //cut面を挟んで反対側にあるセル中心の流速は0にする
+      //cut面上の1点(1つ目の交点)から各セルおよび粒子へのベクトルとcut面の法線ベクトルの内積が
+      //異符号だったら、cut面を挟んで反対側にあるはず
       if (tmp * pn <= 0)
       {
         for (int l = 0; l < 3; l++)
@@ -289,9 +294,9 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
     alpha[cell]*= ensCut(cuts[cell], ydirs[cell]) == 1? REAL_TYPE(getBit9(cuts[cell], ydirs[cell])-p2[1])/REAL_TYPE(getBit9(cuts[cell], ydirs[cell])):jm
     alpha[cell]*= ensCut(cuts[cell], zdirs[cell]) == 1? REAL_TYPE(getBit9(cuts[cell], zdirs[cell])-p2[2])/REAL_TYPE(getBit9(cuts[cell], zdirs[cell])):km
     minus
-    alpha[cell] = ensCut(cuts[cell], xdirs[cell]) == 1? REAL_TYPE(p[0]-(512-getBit9(cuts[cell], xdirs[cell])))/REAL_TYPE(getBit9(cuts[cell], xdirs[cell])):ip
-    alpha[cell]*= ensCut(cuts[cell], ydirs[cell]) == 1? REAL_TYPE(p[1]-(512-getBit9(cuts[cell], ydirs[cell])))/REAL_TYPE(getBit9(cuts[cell], ydirs[cell])):jp
-    alpha[cell]*= ensCut(cuts[cell], zdirs[cell]) == 1? REAL_TYPE(p[2]-(512-getBit9(cuts[cell], zdirs[cell])))/REAL_TYPE(getBit9(cuts[cell], zdirs[cell])):kp
+    alpha[cell] = ensCut(cuts[cell], xdirs[cell]) == 1? REAL_TYPE(p2[0]-(512-getBit9(cuts[cell], xdirs[cell])))/REAL_TYPE(getBit9(cuts[cell], xdirs[cell])):ip
+    alpha[cell]*= ensCut(cuts[cell], ydirs[cell]) == 1? REAL_TYPE(p2[1]-(512-getBit9(cuts[cell], ydirs[cell])))/REAL_TYPE(getBit9(cuts[cell], ydirs[cell])):jp
+    alpha[cell]*= ensCut(cuts[cell], zdirs[cell]) == 1? REAL_TYPE(p2[2]-(512-getBit9(cuts[cell], zdirs[cell])))/REAL_TYPE(getBit9(cuts[cell], zdirs[cell])):kp
     */
 
     //cell 0
@@ -300,39 +305,39 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
     alpha[0] *= ensCut(cuts[0], zdirs[0]) == 1 ? REAL_TYPE(getBit9(cuts[0], zdirs[0]) - p2[2]) / REAL_TYPE(getBit9(cuts[0], zdirs[0])) : km;
 
     //cell 1
-    alpha[1] = ensCut(cuts[1], xdirs[1]) == 1 ? REAL_TYPE(p[0] - (512 - getBit9(cuts[1], xdirs[1]))) / REAL_TYPE(getBit9(cuts[1], xdirs[1])) : ip;
+    alpha[1] = ensCut(cuts[1], xdirs[1]) == 1 ? REAL_TYPE(p2[0] - (512 - getBit9(cuts[1], xdirs[1]))) / REAL_TYPE(getBit9(cuts[1], xdirs[1])) : ip;
     alpha[1] *= ensCut(cuts[1], ydirs[1]) == 1 ? REAL_TYPE(getBit9(cuts[1], ydirs[1]) - p2[1]) / REAL_TYPE(getBit9(cuts[1], ydirs[1])) : jm;
     alpha[1] *= ensCut(cuts[1], zdirs[1]) == 1 ? REAL_TYPE(getBit9(cuts[1], zdirs[1]) - p2[2]) / REAL_TYPE(getBit9(cuts[1], zdirs[1])) : km;
 
     //cel 2
-    alpha[2] = ensCut(cuts[2], xdirs[2]) == 1 ? REAL_TYPE(p[0] - (512 - getBit9(cuts[2], xdirs[2]))) / REAL_TYPE(getBit9(cuts[2], xdirs[2])) : ip;
-    alpha[2] *= ensCut(cuts[2], ydirs[2]) == 1 ? REAL_TYPE(p[1] - (512 - getBit9(cuts[2], ydirs[2]))) / REAL_TYPE(getBit9(cuts[2], ydirs[2])) : jp;
+    alpha[2] = ensCut(cuts[2], xdirs[2]) == 1 ? REAL_TYPE(p2[0] - (512 - getBit9(cuts[2], xdirs[2]))) / REAL_TYPE(getBit9(cuts[2], xdirs[2])) : ip;
+    alpha[2] *= ensCut(cuts[2], ydirs[2]) == 1 ? REAL_TYPE(p2[1] - (512 - getBit9(cuts[2], ydirs[2]))) / REAL_TYPE(getBit9(cuts[2], ydirs[2])) : jp;
     alpha[2] *= ensCut(cuts[2], zdirs[2]) == 1 ? REAL_TYPE(getBit9(cuts[2], zdirs[2]) - p2[2]) / REAL_TYPE(getBit9(cuts[2], zdirs[2])) : km;
 
     //cell 3
     alpha[3] = ensCut(cuts[3], xdirs[3]) == 1 ? REAL_TYPE(getBit9(cuts[3], xdirs[3]) - p2[0]) / REAL_TYPE(getBit9(cuts[3], xdirs[3])) : im;
-    alpha[3] *= ensCut(cuts[3], ydirs[3]) == 1 ? REAL_TYPE(p[1] - (512 - getBit9(cuts[3], ydirs[3]))) / REAL_TYPE(getBit9(cuts[3], ydirs[3])) : jp;
+    alpha[3] *= ensCut(cuts[3], ydirs[3]) == 1 ? REAL_TYPE(p2[1] - (512 - getBit9(cuts[3], ydirs[3]))) / REAL_TYPE(getBit9(cuts[3], ydirs[3])) : jp;
     alpha[3] *= ensCut(cuts[3], zdirs[3]) == 1 ? REAL_TYPE(getBit9(cuts[3], zdirs[3]) - p2[2]) / REAL_TYPE(getBit9(cuts[3], zdirs[3])) : km;
 
     //cell 4
     alpha[4] = ensCut(cuts[4], xdirs[4]) == 1 ? REAL_TYPE(getBit9(cuts[4], xdirs[4]) - p2[0]) / REAL_TYPE(getBit9(cuts[4], xdirs[4])) : im;
     alpha[4] *= ensCut(cuts[4], ydirs[4]) == 1 ? REAL_TYPE(getBit9(cuts[4], ydirs[4]) - p2[1]) / REAL_TYPE(getBit9(cuts[4], ydirs[4])) : jm;
-    alpha[4] *= ensCut(cuts[4], zdirs[4]) == 1 ? REAL_TYPE(p[2] - (512 - getBit9(cuts[4], zdirs[4]))) / REAL_TYPE(getBit9(cuts[4], zdirs[4])) : kp;
+    alpha[4] *= ensCut(cuts[4], zdirs[4]) == 1 ? REAL_TYPE(p2[2] - (512 - getBit9(cuts[4], zdirs[4]))) / REAL_TYPE(getBit9(cuts[4], zdirs[4])) : kp;
 
     //cell 5
-    alpha[5] = ensCut(cuts[5], xdirs[5]) == 1 ? REAL_TYPE(p[0] - (512 - getBit9(cuts[5], xdirs[5]))) / REAL_TYPE(getBit9(cuts[5], xdirs[5])) : ip;
+    alpha[5] = ensCut(cuts[5], xdirs[5]) == 1 ? REAL_TYPE(p2[0] - (512 - getBit9(cuts[5], xdirs[5]))) / REAL_TYPE(getBit9(cuts[5], xdirs[5])) : ip;
     alpha[5] *= ensCut(cuts[5], ydirs[5]) == 1 ? REAL_TYPE(getBit9(cuts[5], ydirs[5]) - p2[1]) / REAL_TYPE(getBit9(cuts[5], ydirs[5])) : jm;
-    alpha[5] *= ensCut(cuts[5], zdirs[5]) == 1 ? REAL_TYPE(p[2] - (512 - getBit9(cuts[5], zdirs[5]))) / REAL_TYPE(getBit9(cuts[5], zdirs[5])) : kp;
+    alpha[5] *= ensCut(cuts[5], zdirs[5]) == 1 ? REAL_TYPE(p2[2] - (512 - getBit9(cuts[5], zdirs[5]))) / REAL_TYPE(getBit9(cuts[5], zdirs[5])) : kp;
 
     //cell 6
-    alpha[6] = ensCut(cuts[6], xdirs[6]) == 1 ? REAL_TYPE(p[0] - (512 - getBit9(cuts[6], xdirs[6]))) / REAL_TYPE(getBit9(cuts[6], xdirs[6])) : ip;
-    alpha[6] *= ensCut(cuts[6], ydirs[6]) == 1 ? REAL_TYPE(p[1] - (512 - getBit9(cuts[6], ydirs[6]))) / REAL_TYPE(getBit9(cuts[6], ydirs[6])) : jp;
-    alpha[6] *= ensCut(cuts[6], zdirs[6]) == 1 ? REAL_TYPE(p[2] - (512 - getBit9(cuts[6], zdirs[6]))) / REAL_TYPE(getBit9(cuts[6], zdirs[6])) : kp;
+    alpha[6] =  ensCut(cuts[6], xdirs[6]) == 1 ? REAL_TYPE(p2[0] - (512 - getBit9(cuts[6], xdirs[6]))) / REAL_TYPE(getBit9(cuts[6], xdirs[6])) : ip;
+    alpha[6] *= ensCut(cuts[6], ydirs[6]) == 1 ? REAL_TYPE(p2[1] - (512 - getBit9(cuts[6], ydirs[6]))) / REAL_TYPE(getBit9(cuts[6], ydirs[6])) : jp;
+    alpha[6] *= ensCut(cuts[6], zdirs[6]) == 1 ? REAL_TYPE(p2[2] - (512 - getBit9(cuts[6], zdirs[6]))) / REAL_TYPE(getBit9(cuts[6], zdirs[6])) : kp;
 
     //cell 7
     alpha[7] = ensCut(cuts[7], xdirs[7]) == 1 ? REAL_TYPE(getBit9(cuts[7], xdirs[7]) - p2[0]) / REAL_TYPE(getBit9(cuts[7], xdirs[7])) : im;
-    alpha[7] *= ensCut(cuts[7], ydirs[7]) == 1 ? REAL_TYPE(p[1] - (512 - getBit9(cuts[7], ydirs[7]))) / REAL_TYPE(getBit9(cuts[7], ydirs[7])) : jp;
-    alpha[7] *= ensCut(cuts[7], zdirs[7]) == 1 ? REAL_TYPE(p[2] - (512 - getBit9(cuts[7], zdirs[7]))) / REAL_TYPE(getBit9(cuts[7], zdirs[7])) : kp;
+    alpha[7] *= ensCut(cuts[7], ydirs[7]) == 1 ? REAL_TYPE(p2[1] - (512 - getBit9(cuts[7], ydirs[7]))) / REAL_TYPE(getBit9(cuts[7], ydirs[7])) : jp;
+    alpha[7] *= ensCut(cuts[7], zdirs[7]) == 1 ? REAL_TYPE(p2[2] - (512 - getBit9(cuts[7], zdirs[7]))) / REAL_TYPE(getBit9(cuts[7], zdirs[7])) : kp;
 
     for (int l = 0; l < 3; l++)
     {
@@ -403,7 +408,6 @@ bool Interpolator::InterpolateData(const DSlib::DataBlock& DataBlock, const REAL
     if (has_cut_local != 0)
     {
       LPT::LPT_LOG::GetInstance()->DEBUG("interpolate with cut ", id);
-      //      LPT::LPT_LOG::GetInstance()->INFO("but using TrilinearInterpolate for comparison test");
       return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km);
     }
   }
