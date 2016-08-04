@@ -184,7 +184,9 @@ if test "$with_pdm" != "none" ; then
   PDM_DIR=$with_pdm;
   PDM_CFLAGS="-I$PDM_DIR/include"
   PDM_LDFLAGS=-L$PDM_DIR/lib
-  PDM_LIBS="$PDM_DIR/lib/libPDM.a -lz"
+  #-lzもstdc++同様にlinux版を見ている模様
+  #PDM_LIBS="$PDM_DIR/lib/libPDM.a -lz"
+  PDM_LIBS="$PDM_DIR/lib/libPDM.a /opt/FJSVXosDevkit/sparc64fx/target/usr/lib64/libz.a"
 else
   echo "  Error: PDM library not specified."
   echo "         set --with-pdm option"
@@ -252,7 +254,9 @@ LPT_FC_LD="$FC"
 if test "$with_comp" = "FJ"; then
   LPT_FC_LD="$CXX"" --linkfortran"
 else
-  LPT_LIBS="$LPT_LIBS"" -lstdc++"
+  # -lstdc++があると駄目ぽい。どうもlinux用の/usr/lib/libstdc++をリンクしてる模様
+  # LPT_LIBS="$LPT_LIBS"" -lstdc++"
+  LPT_LIBS="$LPT_LIBS"
 fi
 AC_SUBST(LPT_FC_LD)
 

@@ -8,6 +8,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 #include "StartPointMovingPoints.h"
 #include "LPT_LogOutput.h"
 
@@ -72,7 +73,7 @@ void MovingPoints::UpdateStartPoint(double CurrentTime)
   if (CurrentTime < *(Time.begin())) return;
 
   //TimeからCurrentTimeに相当するindexを取得
-  size_t index = distance(Time.begin(), lower_bound(Time.begin(), Time.end(), CurrentTime)) - 1;
+  size_t index = std::distance(Time.begin(), std::lower_bound(Time.begin(), Time.end(), CurrentTime)) - 1;
   if (index >= 0 && index < Time.size())
   {
     Coord1[0] = Coords[index * 3];

@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <cmath>
 #include <sstream>
-#include <tuple>
 #include <set>
 #include <bitset>
 
@@ -23,6 +22,27 @@
 
 namespace PPlib
 {
+  template <typename T>
+  struct vector3
+  {
+    vector3(const T& arg_x, const T& arg_y, const T& arg_z) 
+    {
+      x=arg_x;
+      y=arg_y;
+      z=arg_z;
+    }
+    T x;
+    T y;
+    T z;
+
+    bool operator < (const vector3& obj) const
+    {
+      if (this->x != obj.x) return this->x < obj.x;
+      if (this->y != obj.y) return this->y < obj.y;
+      return this->z < obj.z;
+    }
+  };
+
 namespace
 {
 // 無名namespace内はFFVCのFB_Define.hから一部をコピーしたもの
@@ -112,7 +132,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
   const int zdirs[8] = { 5, 5, 5, 5, 4, 4, 4, 4 };
 
   //交点の座標を最も原点に近い側のセル中心を原点とした座標で表す
-  std::set< std::tuple< int, int, int > > tmp;
+  std::set< vector3<int> > tmp;
   for (int i = 0; i < 8; i++)
   {
     if ((cuts[i] & masks[i]) != 0LL)
@@ -131,7 +151,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
         {
           x = 511 - x;
         }
-        tmp.insert(std::make_tuple(x, (ydirs[i] + 1) % 2 * 511, (zdirs[i] + 1) % 2 * 511));
+        tmp.insert(vector3<int>(x, (ydirs[i] + 1) % 2 * 511, (zdirs[i] + 1) % 2 * 511));
       }
       if (ensCut(cuts[i], ydirs[i]) == 1)
       {
@@ -147,7 +167,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
         {
           y = 511 - y;
         }
-        tmp.insert(std::make_tuple((xdirs[i] + 1) % 2 * 511, y, (zdirs[i] + 1) % 2 * 511));
+        tmp.insert(vector3<int>((xdirs[i] + 1) % 2 * 511, y, (zdirs[i] + 1) % 2 * 511));
       }
       if (ensCut(cuts[i], zdirs[i]) == 1)
       {
@@ -163,20 +183,20 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
         {
           z = 511 - z;
         }
-        tmp.insert(std::make_tuple((xdirs[i] + 1) % 2 * 511, (ydirs[i] + 1) % 2 * 511, z));
+        tmp.insert(vector3<int>((xdirs[i] + 1) % 2 * 511, (ydirs[i] + 1) % 2 * 511, z));
       }
     }
   }
 
-  std::vector< std::tuple< int, int, int > > coords(tmp.begin(), tmp.end());
+  std::vector< vector3<int> > coords(tmp.begin(), tmp.end());
 
   //交点が1つだけの場合、交点は必ずどこかのセル中心と一致しなければならない。
   if (coords.size() == 1)
   {
     if (
-        (std::get< 0 >(coords[0]) != 0 && std::get< 0 >(coords[0]) != 511) ||
-        (std::get< 1 >(coords[0]) != 0 && std::get< 1 >(coords[0]) != 511) ||
-        (std::get< 2 >(coords[0]) != 0 && std::get< 2 >(coords[0]) != 511))
+        (coords[0].x != 0 && coords[0].x != 511) ||
+        (coords[0].y != 0 && coords[0].y != 511) ||
+        (coords[0].z != 0 && coords[0].z != 511))
     {
       LPT::LPT_LOG::GetInstance()->ERROR("invalid cut plane 1");
     }
@@ -188,9 +208,9 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
   if (coords.size() == 2)
   {
     if (
-        (std::get< 0 >(coords[0]) != std::get< 0 >(coords[1])) &&
-        (std::get< 1 >(coords[0]) != std::get< 1 >(coords[1])) &&
-        (std::get< 2 >(coords[0]) != std::get< 2 >(coords[1])))
+        (coords[0].x != coords[1].x) &&
+        (coords[0].y != coords[1].y) &&
+        (coords[0].z != coords[1].z))
     {
       LPT::LPT_LOG::GetInstance()->ERROR("invalid cut plane 2");
     }
@@ -202,9 +222,9 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
   long long normal_vector[3];
   if (coords.size() >= 3)
   {
-    long long v0[3] = { std::get< 0 >(coords[0]), std::get< 1 >(coords[0]), std::get< 2 >(coords[0]) };
-    long long v1[3] = { std::get< 0 >(coords[1]), std::get< 1 >(coords[1]), std::get< 2 >(coords[1]) };
-    long long v2[3] = { std::get< 0 >(coords[2]), std::get< 1 >(coords[2]), std::get< 2 >(coords[2]) };
+    long long v0[3] = { coords[0].x, coords[0].x, coords[0].x };
+    long long v1[3] = { coords[1].y, coords[1].y, coords[1].y };
+    long long v2[3] = { coords[2].z, coords[2].z, coords[2].z };
 
     Utility::xmy< 3 >(v0, v1);
     Utility::xmy< 3 >(v0, v2);
@@ -215,7 +235,7 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
       bool debug_print_done = false;
       for (int i = 4; i < coords.size(); i++)
       {
-        long long v[3] = { std::get< 0 >(coords[i]), std::get< 1 >(coords[i]), std::get< 2 >(coords[i]) };
+        long long v[3] = { coords[i].x, coords[i].y, coords[i].z };
         Utility::xmy< 3 >(v0, v);
         long long tmp = Utility::dot< 3 >(normal_vector, v);
         if (Utility::dot< 3 >(normal_vector, v) != 0)
@@ -224,10 +244,10 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
           if (!debug_print_done)
           {
             debug_print_done = true;
-            for (std::vector< std::tuple< int, int, int > >::iterator it = coords.begin(); it != coords.end(); ++it)
+            for (std::vector< vector3<int> >::iterator it = coords.begin(); it != coords.end(); ++it)
             {
               std::stringstream ss;
-              ss << "cut coordinate = " << std::get< 0 >(*it) << "," << std::get< 1 >(*it) << "," << std::get< 2 >(*it);
+              ss << "cut coordinate = " << it->x << "," << it->y << "," << it->z;
               LPT::LPT_LOG::GetInstance()->ERROR(ss.str());
             }
             for (int i = 0; i < 8; i++)
@@ -407,7 +427,7 @@ bool Interpolator::InterpolateData(const DSlib::DataBlock& DataBlock, const REAL
 
     if (has_cut_local != 0)
     {
-      LPT::LPT_LOG::GetInstance()->DEBUG("interpolate with cut ", id);
+      LPT::LPT_LOG::GetInstance()->LOG("interpolate with cut ", id);
       return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km);
     }
   }
