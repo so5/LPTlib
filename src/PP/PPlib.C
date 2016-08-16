@@ -232,10 +232,6 @@ void PPlib::OutputStartPoints(const REAL_TYPE& RefLength)
   {
     SumGridPoints += (*it)->GetSumStartPoints();
   }
-  if (SumGridPoints <= 0)
-  {
-    return;
-  }
 
   //REAL_TYPE型のデータメンバを出力
   REAL_TYPE* rwork = new REAL_TYPE[SumGridPoints * 3];
