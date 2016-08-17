@@ -40,10 +40,7 @@ long DSlib::AddCachedBlocks(CommDataBlockManager* RecvData, const double& Time)
   LPT::PMlibWrapper& PM = LPT::PMlibWrapper::GetInstance();
   PM.start("LPT_AddCache");
   int ArrivedBlockID = -1;
-  // 次のif文内のCachedBlocks.size()はlockせずに実行しているので、
-  // 他のスレッドがpush_backする前のsizeを取得する可能性がある
-  // したがって、ワーストケースではキャッシュサイズを(スレッド数-1)*sizeof(DataBlock)
-  // 越えてしまう可能性があるが、性能を優先させるためにこの実装にしている
+  omp_set_lock(&CachedBlocksLock);
   if (CachedBlocks.size() > CacheSize)
   {
     LPT::LPT_LOG::GetInstance()->WARN("DataBlock Cache overflowed");
@@ -51,6 +48,7 @@ long DSlib::AddCachedBlocks(CommDataBlockManager* RecvData, const double& Time)
     LPT::LPT_LOG::GetInstance()->WARN("Max cache size = ", CacheSize);
     return -1;
   }
+  omp_unset_lock(&CachedBlocksLock);
 
   ArrivedBlockID   = RecvData->Header->BlockID;
   DataBlock* tmp   = new DataBlock;

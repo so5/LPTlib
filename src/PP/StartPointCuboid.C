@@ -137,13 +137,13 @@ void Cuboid::Divider(std::vector< StartPoint* >* StartPoints, const int& MaxNumS
   int MB = -1;
   int KB = -1;
   Utility::DetermineBlockSize(&NB, &MB, &KB, MaxNumStartPoints, N, M, K);
-  LPT::LPT_LOG::GetInstance()->INFO("MaxNumStartPoints=", MaxNumStartPoints);
-  LPT::LPT_LOG::GetInstance()->INFO("N=", N);
-  LPT::LPT_LOG::GetInstance()->INFO("M=", M);
-  LPT::LPT_LOG::GetInstance()->INFO("K=", K);
-  LPT::LPT_LOG::GetInstance()->INFO("NB=", NB);
-  LPT::LPT_LOG::GetInstance()->INFO("MB=", MB);
-  LPT::LPT_LOG::GetInstance()->INFO("KB=", KB);
+  LPT::LPT_LOG::GetInstance()->LOG("MaxNumStartPoints=", MaxNumStartPoints);
+  LPT::LPT_LOG::GetInstance()->LOG("N=", N);
+  LPT::LPT_LOG::GetInstance()->LOG("M=", M);
+  LPT::LPT_LOG::GetInstance()->LOG("K=", K);
+  LPT::LPT_LOG::GetInstance()->LOG("NB=", NB);
+  LPT::LPT_LOG::GetInstance()->LOG("MB=", MB);
+  LPT::LPT_LOG::GetInstance()->LOG("KB=", KB);
 
   //元の領域の格子点座標を各軸毎に取得
   std::vector< REAL_TYPE > coord_x;

@@ -86,8 +86,8 @@ int PP_Transport::Calc(ParticleData* Particle, const double& deltaT, const int& 
         return 4;
       }
     }
-    LPT::LPT_LOG::GetInstance()->INFO("ParticleID = ", Particle->GetAllID());
-    LPT::LPT_LOG::GetInstance()->INFO("Coord before calc = ", x_new, 3);
+    LPT::LPT_LOG::GetInstance()->LOG("ParticleID = ", Particle->GetAllID());
+    LPT::LPT_LOG::GetInstance()->LOG("Coord before calc = ", x_new, 3);
 
 // 粒子座標をデータブロック内の座標値に変換
 #ifdef __INTEL_COMPILER
@@ -105,7 +105,7 @@ int PP_Transport::Calc(ParticleData* Particle, const double& deltaT, const int& 
 #endif
     ptrIP->ConvItoX(x_i, x_new, LoadedDataBlock->Origin, LoadedDataBlock->Pitch);
 
-    LPT::LPT_LOG::GetInstance()->INFO("Coord after calc = ", x_new, 3);
+    LPT::LPT_LOG::GetInstance()->LOG("Coord after calc = ", x_new, 3);
     if (ptrDM->CheckBounds(x_new) != 0) return 1;
   } // end of for(t)
 

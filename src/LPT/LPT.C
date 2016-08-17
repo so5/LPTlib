@@ -308,7 +308,7 @@ int LPT::LPT_Initialize(LPT_InitializeArgs args)
   //DSlibクラスの初期化
   ptrDSlib       = DSlib::DSlib::GetInstance();
   const int vlen = 3;
-  ptrDSlib->Initialize(args.CacheSize * 1024 * 1024 / (vlen * MaxDataBlockSize));
+  ptrDSlib->Initialize((size_t)args.CacheSize * 1024 * 1024 / vlen / MaxDataBlockSize);
   LPT_LOG::GetInstance()->LOG("DSlib initialized");
 
   //PPlibクラスの初期化

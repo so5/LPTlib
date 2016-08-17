@@ -44,11 +44,6 @@ void PPlib::EmitNewParticles(const double& CurrentTime, const int& CurrentTimeSt
     LPT::LPT_LOG::GetInstance()->INFO("Number of New Particles = ", tmpParticles.size());
     for (std::list< ParticleData* >::iterator it = tmpParticles.begin(); it != tmpParticles.end(); ++it)
     {
-      //debug write start
-      std::stringstream ss;
-      ss << (*it)->x << "," << (*it)->y << "," << (*it)->z;
-      LPT::LPT_LOG::GetInstance()->INFO(ss.str());
-      //debug write end
       Particles.insert(*it);
     }
   }
