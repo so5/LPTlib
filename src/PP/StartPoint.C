@@ -31,6 +31,7 @@ std::string StartPoint::PrintTimeAndID(const double& RefTime) const
   oss << "LatestEmitTime       = " << this->LatestEmitTime * RefTime << std::endl;
   oss << "ID                   = " << this->ID[0] << "," << this->ID[1] << std::endl;
   oss << "LatestEmitParticleID = " << this->LatestEmitParticleID << std::endl;
+  oss << "ParticleLifeTime     = " << this->ParticleLifeTime<< std::endl;
   return oss.str();
 }
 
@@ -68,6 +69,11 @@ void StartPoint::ReadTimeAndID(std::istream& stream, const double& RefTime)
   std::getline(stream, work, '=');
   std::getline(stream, work);
   this->LatestEmitParticleID = std::atoi(work.c_str());
+
+  //ParticleLifeTime
+  std::getline(stream, work, '=');
+  std::getline(stream, work);
+  this->ParticleLifeTime = std::atoi(work.c_str());
 }
 
 void StartPoint::EmitNewParticle(std::list< ParticleData* >* ParticleList, const double& CurrentTime, const int& CurrentTimeStep)
