@@ -153,6 +153,18 @@ public:
     logfile.flush();
   }
 
+  template < typename T >
+  void ERROR(std::string message, T* value, int max)
+  {
+    logfile << "LPT ERROR: " << message;
+    for (int i = 0; i < max - 1; i++)
+    {
+      logfile << value[i] << ",";
+    }
+    logfile << value[max - 1] << "\n";
+    logfile.flush();
+  }
+
   void TRACE(const std::string& file, const int& line)
   {
     logfile << "LPT TRACE : " << file << "(" << line << ")" << std::endl;
