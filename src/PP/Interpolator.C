@@ -125,7 +125,7 @@ bool Interpolator::TrilinearInterpolate(REAL_TYPE dval[3], REAL_TYPE data[8][3],
    *  0-----1
    *
    */
-bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km)
+bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km, const REAL_TYPE Origin[3], const REAL_TYPE Pitch[3])
 {
   const int xdirs[8] = { 1, 0, 0, 1, 1, 0, 0, 1 };
   const int ydirs[8] = { 3, 3, 2, 2, 3, 3, 2, 2 };
@@ -244,11 +244,18 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
           if (!debug_print_done)
           {
             debug_print_done = true;
+            LPT::LPT_LOG::GetInstance()->ERROR("origin = ",Origin,3);
+            LPT::LPT_LOG::GetInstance()->ERROR("pitch  = ",Pitch,3);
             for (std::vector< vector3<int> >::iterator it = coords.begin(); it != coords.end(); ++it)
             {
               std::stringstream ss;
-              ss << "cut coordinate = " << it->x << "," << it->y << "," << it->z;
+              ss << "cut coordinate(quantitize) = " << it->x << "," << it->y << "," << it->z;
               LPT::LPT_LOG::GetInstance()->ERROR(ss.str());
+              std::stringstream ss2;
+              ss2 << "cut coord = " << Origin[0] + Pitch[0]*(im + double((it->x))/512) << ","
+                                   << Origin[1] + Pitch[1]*(jm + double((it->y))/512) << "," 
+                                   << Origin[2] + Pitch[2]*(km + double((it->z))/512)  ;
+              LPT::LPT_LOG::GetInstance()->ERROR(ss2.str());
             }
             for (int i = 0; i < 8; i++)
             {
@@ -257,6 +264,9 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
               LPT::LPT_LOG::GetInstance()->ERROR(ss.str());
             }
           }
+          //本来はここで何か対策しないといけないけど、とりあえず計算を進めるために
+          //通常の線形補間をしてみる。
+          return TrilinearInterpolate(dval, data, ip, jp, kp, im, jm, km);
         }
       }
     }
@@ -428,7 +438,7 @@ bool Interpolator::InterpolateData(const DSlib::DataBlock& DataBlock, const REAL
     if (has_cut_local != 0)
     {
       LPT::LPT_LOG::GetInstance()->LOG("interpolate with cut ", id);
-      return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km);
+      return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km, DataBlock.Origin, DataBlock.Pitch);
     }
   }
 
