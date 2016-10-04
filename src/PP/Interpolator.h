@@ -58,7 +58,7 @@ public:
   //! @param x_I  [in]  粒子座標
   //! @param didx [in]  補間対象データのindex番号
   //! @param dval [out] 補間したベクトルデータを格納する領域
-  bool InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km, const REAL_TYPE Origin[3], const REAL_TYPE Pitch[3]);
+  bool InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km, const REAL_TYPE Origin[3], const REAL_TYPE Pitch[3], const int& i, const int& j,  const int& k);
 
   //! @brief 解析領域全体でのグローバル座標の座標値を、データブロック内のローカル座標に変換する
   //! @param [in]  x   解析領域内でのグローバル座標

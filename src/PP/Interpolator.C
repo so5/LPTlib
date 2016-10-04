@@ -125,7 +125,7 @@ bool Interpolator::TrilinearInterpolate(REAL_TYPE dval[3], REAL_TYPE data[8][3],
    *  0-----1
    *
    */
-bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km, const REAL_TYPE Origin[3], const REAL_TYPE Pitch[3])
+bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], const long long cuts[8], const REAL_TYPE& ip, const REAL_TYPE& jp, const REAL_TYPE& kp, const REAL_TYPE& im, const REAL_TYPE& jm, const REAL_TYPE& km, const REAL_TYPE Origin[3], const REAL_TYPE Pitch[3], const int& px, const int& py, const int& pz)
 {
   const int xdirs[8] = { 1, 0, 0, 1, 1, 0, 0, 1 };
   const int ydirs[8] = { 3, 3, 2, 2, 3, 3, 2, 2 };
@@ -244,18 +244,25 @@ bool Interpolator::InterpolateWithCut(REAL_TYPE dval[3], REAL_TYPE data[8][3], c
           if (!debug_print_done)
           {
             debug_print_done = true;
-            LPT::LPT_LOG::GetInstance()->ERROR("origin = ",Origin,3);
-            LPT::LPT_LOG::GetInstance()->ERROR("pitch  = ",Pitch,3);
+            std::stringstream ss;
+            ss << "bbox = "
+              <<Origin[0]+Pitch[0]*px<<","
+              <<Origin[1]+Pitch[1]*py<<","
+              <<Origin[2]+Pitch[2]*pz<<","
+              <<Origin[0]+Pitch[0]*(px+1)<<","
+              <<Origin[1]+Pitch[1]*(py+1)<<","
+              <<Origin[2]+Pitch[2]*(pz+1);
+            LPT::LPT_LOG::GetInstance()->ERROR(ss.str());
+            ss.str("");
+
             for (std::vector< vector3<int> >::iterator it = coords.begin(); it != coords.end(); ++it)
             {
               std::stringstream ss;
-              ss << "cut coordinate(quantitize) = " << it->x << "," << it->y << "," << it->z;
+              // ss << "cut coordinate = " << it->x << "," << it->y << "," << it->z;
+              ss << "cut coord = " << Origin[0] + Pitch[0]*(px + double((it->x))/512) << ","
+                                   << Origin[1] + Pitch[1]*(py + double((it->y))/512) << "," 
+                                   << Origin[2] + Pitch[2]*(pz + double((it->z))/512)  ;
               LPT::LPT_LOG::GetInstance()->ERROR(ss.str());
-              std::stringstream ss2;
-              ss2 << "cut coord = " << Origin[0] + Pitch[0]*(im + double((it->x))/512) << ","
-                                   << Origin[1] + Pitch[1]*(jm + double((it->y))/512) << "," 
-                                   << Origin[2] + Pitch[2]*(km + double((it->z))/512)  ;
-              LPT::LPT_LOG::GetInstance()->ERROR(ss2.str());
             }
             for (int i = 0; i < 8; i++)
             {
@@ -438,7 +445,7 @@ bool Interpolator::InterpolateData(const DSlib::DataBlock& DataBlock, const REAL
     if (has_cut_local != 0)
     {
       LPT::LPT_LOG::GetInstance()->LOG("interpolate with cut ", id);
-      return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km, DataBlock.Origin, DataBlock.Pitch);
+      return InterpolateWithCut(dval, data, cuts, ip, jp, kp, im, jm, km, DataBlock.Origin, DataBlock.Pitch, i, j, k);
     }
   }
 

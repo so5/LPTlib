@@ -291,6 +291,35 @@ int LPT::LPT_Initialize(LPT_InitializeArgs args)
   args.dz            = rbuff[5];
 
   LPT_LOG::GetInstance()->INFO("LPT_Args = ", args);
+
+  //DEBUG
+  // dump cut info
+  // for(int k=0; k<args.Nz; i++)
+  // {
+  //   for(int j=0; j<args.Ny; i++)
+  //   {
+  //     for(int i=0; i<args.Nx; i++)
+  //     {
+  //       size_t index=i+j*(args.Nx+2*args.GuideCellSize)+k*(args.Nx+2*args.GuideCellSize)*(args.Ny+2*args.GuideCellSize);
+  //       long long cut=args.d_cut[index];
+  //       if(cut & 0x3fLL)
+  //       {
+  //         for(int i=0; i<6;i++)
+  //         {
+  //           if((cut >> i) & 1LL)
+  //           {
+  //              (double)(((c >> 6) >> i* 9) & 0x1ff)/511
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  //DEBUG
+
+
+
   //LPTクラスの引数を取り出す
   OutputDimensional      = args.OutputDimensional;
   RefLength              = OutputDimensional ? args.RefLength : 1.0;
